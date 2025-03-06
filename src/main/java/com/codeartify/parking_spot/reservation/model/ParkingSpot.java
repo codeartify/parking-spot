@@ -1,0 +1,25 @@
+package com.codeartify.parking_spot.reservation.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.*;
+
+@Entity
+@Getter
+@Setter
+public class ParkingSpot {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private boolean isAvailable;
+
+    public ParkingSpot(boolean isAvailable ) {
+        this.isAvailable = isAvailable;
+    }
+
+    public ParkingSpot() {
+    }
+}
