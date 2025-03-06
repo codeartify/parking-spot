@@ -1,0 +1,19 @@
+### Reserve a parking spot
+POST http://localhost:8080/reserveSpot
+Content-Type: application/json
+
+{
+  "reservedBy": "John Doe",
+  "startTime": "2025-03-06T15:30:00",
+  "endTime": "2025-03-06T17:30:00"
+}
+
+### Reserve another parking spot with different times
+POST http://localhost:8080/reserveSpot
+Content-Type: application/json
+
+{
+  "reservedBy": "Jane Smith",
+  "startTime": "2025-03-07T10:00:00",
+  "endTime": "2025-03-07T12:00:00"
+}
