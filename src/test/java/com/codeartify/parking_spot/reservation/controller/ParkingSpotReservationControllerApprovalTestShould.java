@@ -1,31 +1,78 @@
 package com.codeartify.parking_spot.reservation.controller;
 
 import com.codeartify.parking_spot.reservation.dto.ParkingReservationRequest;
+import com.codeartify.parking_spot.reservation.model.ParkingSpot;
+import com.codeartify.parking_spot.reservation.repository.ParkingReservationRepository;
+import com.codeartify.parking_spot.reservation.repository.ParkingSpotRepository;
 import com.codeartify.parking_spot.reservation.service.ParkingSpotReservationService;
+import org.approvaltests.combinations.CombinationApprovals;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
-class ParkingSpotReservationControllerApprovalTestShould {
+
+class ParkingSpotReservationServiceApprovalTestShould {
+
     @Test
-    void cover_reserve_parking_spot() {
-        var parkingSpotReservationService = new ParkingSpotReservationService(null, null);
-        var unitUnderTest = new ParkingSpotReservationController(parkingSpotReservationService);
-        String reservedBy = null;
-        var startTime = LocalDateTime.of(2025, 2, 23, 8, 0);
-        var endTime = LocalDateTime.of(2025, 2, 23, 8, 29);
-        ParkingReservationRequest request = new ParkingReservationRequest(reservedBy, startTime, endTime);
-
-        var result = unitUnderTest.reserveParkingSpot(request);
-
-        assertEquals("Body: Reservation must be at least 30 minutes long. status code: 400 BAD_REQUEST", stateAsString(result));
+    void test() {
+        CombinationApprovals.verifyAllCombinations(
+                ParkingSpotReservationServiceApprovalTestShould::method,
+                new ParkingReservationRequest[]{
+                        new ParkingReservationRequest(),
+                        new ParkingReservationRequest("Olly", null, null),
+                        new ParkingReservationRequest("Olly", LocalDateTime.of(2020, 1, 1, 1, 1), null),
+                        new ParkingReservationRequest("Olly", null, LocalDateTime.of(2020, 1, 1, 8, 1)),
+                        new ParkingReservationRequest(null, LocalDateTime.of(2020, 1, 1, 8, 0), LocalDateTime.of(2020, 1, 1, 8, 1)),
+                        new ParkingReservationRequest("Olly", LocalDateTime.of(2020, 1, 1, 19, 5), LocalDateTime.of(2020, 1, 1, 8, 10)),
+                        new ParkingReservationRequest("Olly", LocalDateTime.of(2020, 1, 1, 8, 0), LocalDateTime.of(2020, 1, 1, 8, 1)),
+                        new ParkingReservationRequest("Olly", LocalDateTime.of(2020, 1, 1, 19, 0), LocalDateTime.of(2020, 1, 1, 22, 1)),
+                        new ParkingReservationRequest("Olly", LocalDateTime.of(2020, 1, 1, 8, 0), LocalDateTime.of(2020, 1, 1, 8, 30)),
+                        new ParkingReservationRequest("Olly", LocalDateTime.of(2020, 1, 1, 8, 0), LocalDateTime.of(2020, 1, 1, 8, 31)),
+                },
+                new ParkingReservationRepository[]{withActiveReservation(), withoutActiveReservation()},
+                new ParkingSpotRepository[]{findNoSpot(), findSpot()}
+        );
     }
 
-    private String stateAsString(ResponseEntity<Object> result) {
+    private ParkingSpotRepository findSpot() {
+        var mock = mock(ParkingSpotRepository.class);
+        when(mock.findAnyAvailableSpot()).thenReturn(new ParkingSpot(true));
+        when(mock.toString()).thenReturn("");
+        return mock;
+    }
+
+    private static ParkingSpotRepository findNoSpot() {
+        var mock = mock(ParkingSpotRepository.class);
+        when(mock.findAnyAvailableSpot()).thenReturn(null);
+        when(mock.toString()).thenReturn("");
+        return mock;
+    }
+
+    private static ParkingReservationRepository withoutActiveReservation() {
+        var mock = mock(ParkingReservationRepository.class);
+        when(mock.hasActiveReservation(any(), any(), any())).thenReturn(false);
+        when(mock.toString()).thenReturn("");
+        return mock;
+    }
+
+    private static ParkingReservationRepository withActiveReservation() {
+        var mock = mock(ParkingReservationRepository.class);
+        when(mock.hasActiveReservation(any(), any(), any())).thenReturn(true);
+        when(mock.toString()).thenReturn("");
+        return mock;
+    }
+
+    private static String method(ParkingReservationRequest request, ParkingReservationRepository parkingReservationRepository, ParkingSpotRepository parkingSpotRepository) {
+        return stateAsString(new ParkingSpotReservationController(
+                new ParkingSpotReservationService(parkingReservationRepository, parkingSpotRepository)
+        ).reserveParkingSpot(request));
+    }
+
+
+    private static String stateAsString(ResponseEntity<Object> result) {
         return "Body: " + result.getBody() + " status code: " + result.getStatusCode();
     }
-
 }
