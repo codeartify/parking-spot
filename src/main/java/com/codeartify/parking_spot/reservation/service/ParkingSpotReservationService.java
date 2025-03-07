@@ -1,9 +1,6 @@
-package com.codeartify.parking_spot.reservation.service;
-
-import com.codeartify.parking_spot.reservation.model.ParkingReservation;
-import com.codeartify.parking_spot.reservation.model.ParkingSpot;
-import com.codeartify.parking_spot.reservation.repository.ParkingReservationRepository;
-import com.codeartify.parking_spot.reservation.repository.ParkingSpotRepository;
+package com.codeartify.parking_spot.reservation.service; 
+import com.codeartify.parking_spot.reservation.adapter.data_access.ParkingReservationRepositoryAdapter;
+import com.codeartify.parking_spot.reservation.adapter.data_access.ParkingSpotRepositoryAdapter;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,8 +12,9 @@ import java.time.LocalTime;
 @Service
 @AllArgsConstructor
 public class ParkingSpotReservationService {
-    private final ParkingReservationRepository parkingReservationRepository;
-    private final ParkingSpotRepository parkingSpotRepository;
+    private final ParkingReservationRepositoryAdapter parkingReservationRepository;
+    private final ParkingSpotRepositoryAdapter parkingSpotRepository;
+
 
     private static final LocalTime OPENING_TIME = LocalTime.of(6, 0); // 6:00 AM
     private static final LocalTime CLOSING_TIME = LocalTime.of(22, 0); // 10:00 PM
@@ -32,38 +30,30 @@ public class ParkingSpotReservationService {
             throw new EndTimeBeforeStartTimeException();
         }
         // Ensure reservation is within operating hours
-        if (startTime.toLocalTime().isBefore(OPENING_TIME) || endTime.toLocalTime().isAfter(CLOSING_TIME)) {
+        if (startTime.toLocalTime().isBefore(OPENING_TIME)
+                || endTime.toLocalTime().isAfter(CLOSING_TIME)) {
             throw new ReservationOutsideOperatingTimeException();
         }
         // Check if the user already has an active reservation
-        boolean hasActiveReservation = parkingReservationRepository
-                .hasActiveReservation(reservingMember, startTime, endTime);
+        var hasActiveReservation = parkingReservationRepository.hasActiveReservation(startTime, endTime, reservingMember);
 
         if (hasActiveReservation) {
             throw new ActiveReservationException();
         }
 
         // Find any available spot
-        ParkingSpot spot = this.parkingSpotRepository.findAnyAvailableSpot();
+        var parkingSpotId = parkingSpotRepository.findAnyAvailableSpot();
 
-        if (spot == null) {
-            throw new NoAvailableSpotLeftException();
-        }
+        var parkingReservation = new ParkingReservation(parkingSpotId, reservingMember, startTime, endTime);
 
-        // Create and save the reservation
-        ParkingReservation reservation = new ParkingReservation(
-                reservingMember,
-                spot.getId(),
-                startTime,
-                endTime);
-        this.parkingReservationRepository.save(reservation);
-
-        // Mark the parking spot as unavailable
-        spot.setAvailable(false);
-        this.parkingSpotRepository.save(spot);
+        var storedReservation = parkingReservationRepository.storeParkingReservation(parkingReservation);
 
         // Build and return the response
-        return new ParkingReservationResult(reservation.getId(), reservingMember, startTime, endTime);
+        return new ParkingReservationResult(storedReservation.id(),
+                storedReservation.reservingMember(),
+                storedReservation.startTime(),
+                storedReservation.endTime());
     }
+
 }
 

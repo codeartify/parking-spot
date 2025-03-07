@@ -1,5 +1,5 @@
 package com.codeartify.parking_spot.reservation.controller;
-
+ 
 import com.codeartify.parking_spot.reservation.dto.ParkingReservationRequest;
 import com.codeartify.parking_spot.reservation.dto.ParkingReservationResponse;
 import com.codeartify.parking_spot.reservation.service.*;
