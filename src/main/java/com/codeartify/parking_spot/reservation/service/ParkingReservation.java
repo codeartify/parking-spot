@@ -1,5 +1,7 @@
 package com.codeartify.parking_spot.reservation.service;
 
+import com.codeartify.examples.parking_spot_reservation.service.ReservationPeriod;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -10,11 +12,11 @@ public final class ParkingReservation {
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
 
-    public ParkingReservation(Long parkingSpotId, String reservingMember, LocalDateTime startTime, LocalDateTime endTime) {
+    public ParkingReservation(Long parkingSpotId, String reservingMember, ReservationPeriod reservationPeriod) {
         this.parkingSpotId = parkingSpotId;
         this.reservingMember = reservingMember;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.startTime = reservationPeriod.getStartTime();
+        this.endTime = reservationPeriod.getEndTime();
     }
 
     public void id(Long id) {
