@@ -1,6 +1,8 @@
 package com.codeartify.parking_spot.reservation.adapter.data_access;
 
 import com.codeartify.examples.parking_spot_reservation.service.ReservationPeriod;
+import com.codeartify.examples.parking_spot_reservation.service.port.out.CheckActiveReservations;
+import com.codeartify.examples.parking_spot_reservation.service.port.out.StoreParkingReservation;
 import com.codeartify.parking_spot.reservation.model.ParkingReservationDbEntity;
 import com.codeartify.parking_spot.reservation.repository.ParkingReservationDbEntityRepository;
 import com.codeartify.parking_spot.reservation.repository.ParkingSpotDbEntityRepository;
@@ -10,14 +12,16 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @AllArgsConstructor
-public class ParkingReservationRepositoryAdapter {
+public class ParkingReservationRepositoryAdapter implements CheckActiveReservations, StoreParkingReservation {
     private final ParkingReservationDbEntityRepository parkingReservationDbEntityRepository;
     private final ParkingSpotDbEntityRepository parkingSpotDbEntityRepository;
 
+    @Override
     public boolean hasActiveReservation(ReservationPeriod reservationPeriod, String reservingMember) {
         return this.parkingReservationDbEntityRepository.hasActiveReservation(reservingMember, reservationPeriod.getStartTime(), reservationPeriod.getEndTime());
     }
 
+    @Override
     public ParkingReservation storeParkingReservation(ParkingReservation parkingReservation) {
         // Create and save the reservation
         ParkingReservationDbEntity reservationDbEntity = new ParkingReservationDbEntity(

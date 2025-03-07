@@ -1,5 +1,6 @@
 package com.codeartify.parking_spot.reservation.controller;
  
+import com.codeartify.examples.parking_spot_reservation.service.port.in.ReserveParkingSpot;
 import com.codeartify.parking_spot.reservation.dto.ParkingReservationRequest;
 import com.codeartify.parking_spot.reservation.dto.ParkingReservationResponse;
 import com.codeartify.parking_spot.reservation.service.*;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class ParkingSpotReservationController {
 
-    private final ParkingSpotReservationService parkingSpotReservationService;
+    private final ReserveParkingSpot reserveParkingSpot;
 
 
     @PostMapping("/reserveSpot")
@@ -24,7 +25,7 @@ public class ParkingSpotReservationController {
             var endTime = request.getEndTime();
             var reservingMember = request.getReservedBy();
 
-            var result = parkingSpotReservationService.reserveParkingSpot(startTime, endTime, reservingMember);
+            var result = reserveParkingSpot.reserveParkingSpot(startTime, endTime, reservingMember);
             
             var response = new ParkingReservationResponse();
             response.setReservationId(result.id());
