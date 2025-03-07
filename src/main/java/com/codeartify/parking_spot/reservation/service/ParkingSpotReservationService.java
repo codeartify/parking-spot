@@ -1,5 +1,5 @@
 package com.codeartify.parking_spot.reservation.service;
-
+ 
 import com.codeartify.parking_spot.reservation.dto.ParkingReservationRequest;
 import com.codeartify.parking_spot.reservation.dto.ParkingReservationResponse;
 import com.codeartify.parking_spot.reservation.model.ParkingReservation;
@@ -31,19 +31,16 @@ public class ParkingSpotReservationService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Reservation must be at least 30 minutes long.");
         }
-
         // Ensure the end time is after the start time
         if (request.getEndTime().isBefore(request.getStartTime())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("End time must be after start time.");
         }
-
         // Ensure reservation is within operating hours
         if (request.getStartTime().toLocalTime().isBefore(OPENING_TIME) || request.getEndTime().toLocalTime().isAfter(CLOSING_TIME)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Reservations can only be made between 6:00 AM and 10:00 PM.");
         }
-
         // Check if the user already has an active reservation
         boolean hasActiveReservation = parkingReservationRepository
                 .hasActiveReservation(request.getReservedBy(), request.getStartTime(), request.getEndTime());
@@ -52,14 +49,14 @@ public class ParkingSpotReservationService {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("You already have an active reservation.");
         }
-
+        
         // Find any available spot
         ParkingSpot spot = this.parkingSpotRepository.findAnyAvailableSpot();
 
         if (spot == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No available spot left.");
         }
-
+        
         // Create and save the reservation
         ParkingReservation reservation = new ParkingReservation(
                 request.getReservedBy(),
@@ -80,6 +77,7 @@ public class ParkingSpotReservationService {
         response.setEndTime(request.getEndTime());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
     }
 }
 
