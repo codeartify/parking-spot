@@ -1,7 +1,5 @@
 package com.codeartify.parking_spot.reservation.service;
 
-import com.codeartify.examples.parking_spot_reservation.service.ReservationPeriod;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 

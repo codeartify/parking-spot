@@ -1,6 +1,5 @@
 package com.codeartify.parking_spot.reservation.service;
 
-import com.codeartify.examples.parking_spot_reservation.service.ReservationPeriod;
 import com.codeartify.parking_spot.reservation.adapter.data_access.ParkingReservationRepositoryAdapter;
 import com.codeartify.parking_spot.reservation.adapter.data_access.ParkingSpotRepositoryAdapter;
 import jakarta.transaction.Transactional;

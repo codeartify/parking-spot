@@ -1,6 +1,6 @@
 package com.codeartify.parking_spot.reservation.adapter.data_access;
 
-import com.codeartify.examples.parking_spot_reservation.service.ReservationPeriod;
+import com.codeartify.parking_spot.reservation.service.ReservationPeriod;
 import com.codeartify.parking_spot.reservation.model.ParkingReservationDbEntity;
 import com.codeartify.parking_spot.reservation.repository.ParkingReservationDbEntityRepository;
 import com.codeartify.parking_spot.reservation.repository.ParkingSpotDbEntityRepository;

@@ -1,8 +1,5 @@
-package com.codeartify.examples.parking_spot_reservation.service;
+package com.codeartify.parking_spot.reservation.service;
 
-import com.codeartify.parking_spot.reservation.service.EndTimeBeforeStartTimeException;
-import com.codeartify.parking_spot.reservation.service.ReservationOutsideOperatingTimeException;
-import com.codeartify.parking_spot.reservation.service.ReservationTimeShorterThanMinimalTime;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
