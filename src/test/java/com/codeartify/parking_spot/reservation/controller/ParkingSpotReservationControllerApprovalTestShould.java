@@ -19,7 +19,7 @@ class ParkingSpotReservationServiceApprovalTestShould {
     @Test
     void test() {
         CombinationApprovals.verifyAllCombinations(
-                ParkingSpotReservationServiceApprovalTestShould::method,
+                ParkingSpotReservationServiceApprovalTestShould::invoke,
                 new ParkingReservationRequest[]{
                         new ParkingReservationRequest(),
                         new ParkingReservationRequest("Olly", null, null),
@@ -65,10 +65,11 @@ class ParkingSpotReservationServiceApprovalTestShould {
         return mock;
     }
 
-    private static String method(ParkingReservationRequest request, ParkingReservationRepository parkingReservationRepository, ParkingSpotRepository parkingSpotRepository) {
-        return stateAsString(new ParkingSpotReservationController(
-                new ParkingSpotReservationService(parkingReservationRepository, parkingSpotRepository)
-        ).reserveParkingSpot(request));
+    private static String invoke(ParkingReservationRequest request, ParkingReservationRepository parkingReservationRepository, ParkingSpotRepository parkingSpotRepository) {
+        var service = new ParkingSpotReservationService(parkingReservationRepository, parkingSpotRepository);
+        var controller = new ParkingSpotReservationController(service);
+        var response = controller.reserveParkingSpot(request);
+        return stateAsString(response);
     }
 
 
