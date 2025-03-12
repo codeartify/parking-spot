@@ -30,22 +30,30 @@ public class ParkingSpotReservationService {
         if (Duration.between(request.getStartTime(), request.getEndTime()).toMinutes() < 30) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body("Reservation must be at least 30 minutes long.");
-        }// Ensure the end time is after the start time
+        }
+        
+        // Ensure the end time is after the start time
         if (request.getEndTime().isBefore(request.getStartTime())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body("End time must be after start time.");
-        }// Ensure reservation is within operating hours
+        }
+        
+        // Ensure reservation is within operating hours
         if (request.getStartTime().toLocalTime().isBefore(OPENING_TIME) || request.getEndTime().toLocalTime().isAfter(CLOSING_TIME)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body("Reservations can only be made between 6:00 AM and 10:00 PM.");
-        }// Check if the user already has an active reservation
+        }
+        
+        // Check if the user already has an active reservation
         boolean hasActiveReservation = parkingReservationRepository
                 .hasActiveReservation(request.getReservedBy(), request.getStartTime(), request.getEndTime());
 
         if (hasActiveReservation) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body("You already have an active reservation.");
-        }// Find any available spot
+        }
+        
+        // Find any available spot
         ParkingSpot spot = this.parkingSpotRepository.findAnyAvailableSpot();
 
         if (spot == null) {
